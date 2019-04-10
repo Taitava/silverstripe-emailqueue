@@ -19,9 +19,9 @@ class EmailQueue extends DataObject
 	private static $plural_name = 'Sähköpostiviestit';
 	
 	private static $db = [
-		'From' => 'Varchar(255)',
-		'To' => 'Varchar(255)',
-		'Subject' => 'Varchar(255)',
+		'From' => 'Text',
+		'To' => 'Text',
+		'Subject' => 'Text',
 		'Body' => 'Text',
 		'Status' => "Enum('queued,in-progress,sent,failed','queued')",
 		'EmailClass' => 'Varchar(255)',
