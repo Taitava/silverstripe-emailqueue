@@ -1,0 +1,23 @@
+fi:
+  EmailQueue:
+    ID: 'ID'
+    Created: 'Luotu'
+    LastEdited: 'Viimeksi käsitelty'
+    SendingSchedule: 'Lähetysaika'
+    Status: 'Status'
+    ClassName: 'Tyyppi'
+    UniqueString: 'Yksilöllinen tunniste'
+  DashboardEmailQueue:
+    Queued: 'Lähetettäviä viestejä jonossa'
+    InProgress: 'Lähetettäviä viestejä käsittelyssä'
+    Failed: 'Epäonnistuneita lähetyksiä'
+    Succeeded: 'Onnistuneita lähetyksiä'
+    Newest: 'viimeisin'
+    NewestMessages: 'Uusimmat viestit'
+    CountingStarted: 'Laskenta aloitettu'
+    SendingScheduleDescription: 'Jos lähetysaika on tulevaisuudessa ja statuksena on "queued", järjestelmä odottaa kyseiseen ajankohtaan, ennen kuin lähettää viestin.'
+    QueueDescription: 'Sähköpostijonossa olevia viestejä lähetetään {frequency}:n minuutin välein, korkeintaan {max_messages} viestiä kerralla. Sähköpostijono on käytössä vain osassa lähetettävistä viestityypeistä. Järjestelmän kaikki sähköpostiviestit eivät kulje sähköpostijonon kautta.'
+  EmailQueueSiteConfigExtension:
+    EmailQueueTab: 'Sähköpostijono'
+    TestEmailAddressWhitelist: 'Testisivustolla sallitut sähköpostien vastaanottajat'
+    TestEmailAddressWhitelistDescription: 'Testisivuston ei sallita lähettää viestejä muihin kuin tällä listalla mainittuihin osoitteisiin. Laita jokainen osoite omalle rivilleen. Jos viesti yritetään lähettää osoitteeseen, joka ei ole listalla, vastaanottajaksi vaihdetaan {overriding_address}.'

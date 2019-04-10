@@ -1,0 +1,6 @@
+---
+name: emailqueue
+---
+SiteConfig:
+  extensions:
+    - EmailQueueSiteConfigExtension

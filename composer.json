@@ -1,0 +1,24 @@
+{
+  "name": "taitava/silverstripe-emailqueue",
+  "description": "A module that allows you to send emails in a background process, check previously sent emails, and monitor and cancel queued and scheduled emails. Also contains an email templating structure that makes your email related code easier to manage via custom classes and .ss template files.",
+  "type": "silverstripe-module",
+  "license": "MIT",
+  "require": {
+    "silverstripe/framework": "~3.1",
+    "silverstripe/cms": "~3.1"
+  },
+  "suggest": {
+    "silverstripe/crontask": "Process the email queue automatically.",
+    "silverstripe/dashboard": "Monitor the email queue in the backend."
+  },
+  "keywords": ["silverstripe","email"],
+  "authors": [{
+    "name": "Jarkko Linnanvirta",
+    "email": "posti@taitavasti.fi",
+    "homepage": "http://taitavasti.fi",
+    "role": "Developer"
+  }],
+  "extra": {
+    "installer-name": "emailqueue"
+  }
+}
