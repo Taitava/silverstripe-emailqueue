@@ -2,7 +2,10 @@
 
 if (EmailQueueProcessor::CronTaskInstalled())
 {
-	class EmailQueueProcessorCronTask extends Object implements CronTask
+	// Support SilverStripe versions lower than 3.7:
+	if (!class_exists('SS_Object')) class_alias('Object', 'SS_Object');
+
+	class EmailQueueProcessorCronTask extends SS_Object implements CronTask
 	{
 		/**
 		 * @conf int How often to run - in minutes.
