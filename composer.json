@@ -12,6 +12,11 @@
     "silverstripe/dashboard": "Monitor the email queue in the backend."
   },
   "keywords": ["silverstripe","email"],
+  "autoload": {
+    "psr-4": {
+      "Taitava\\SilverstripeEmailQueue\\": "code/"
+    }
+  },
   "authors": [
     {
       "name": "Jarkko Linnanvirta",
@@ -24,8 +29,5 @@
       "homepage": "http://ilateralweb.co.uk",
       "role": "Developer"
     }
-  ],
-  "extra": {
-    "installer-name": "emailqueue"
-  }
+  ]
 }
