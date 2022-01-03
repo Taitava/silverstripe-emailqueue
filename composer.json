@@ -5,10 +5,10 @@
   "license": "MIT",
   "require": {
     "silverstripe/vendor-plugin": "^1",
-    "silverstripe/framework": "^4.2"
+    "silverstripe/framework": "^4.2",
+    "silverstripe/crontask": "^2.0"
   },
   "suggest": {
-    "silverstripe/crontask": "Process the email queue automatically.",
     "silverstripe/dashboard": "Monitor the email queue in the backend."
   },
   "keywords": ["silverstripe","email"],
