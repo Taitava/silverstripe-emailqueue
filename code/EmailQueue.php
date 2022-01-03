@@ -2,18 +2,11 @@
 
 namespace Taitava\SilverstripeEmailQueue;
 
-
 use DateTime;
-
-
-
 use SilverStripe\Control\Email\Email;
-use Taitava\SilverstripeEmailQueue\EmailQueue;
 use SilverStripe\ORM\Queries\SQLUpdate;
 use SilverStripe\Security\Member;
 use SilverStripe\ORM\DataObject;
-
-
 
 /**
  * Class EmailQueue

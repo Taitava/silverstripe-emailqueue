@@ -2,18 +2,10 @@
 
 namespace Taitava\SilverstripeEmailQueue;
 
-
-
-
-
 use SilverStripe\Forms\FieldList;
-use Taitava\SilverstripeEmailQueue\EmailQueue;
 use SilverStripe\Forms\Tab;
 use SilverStripe\Forms\TextareaField;
 use SilverStripe\ORM\DataExtension;
-
-
-
 
 class EmailQueueSiteConfigExtension extends DataExtension
 {

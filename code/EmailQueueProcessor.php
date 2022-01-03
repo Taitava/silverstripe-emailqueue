@@ -2,15 +2,10 @@
 
 namespace Taitava\SilverstripeEmailQueue;
 
-
-
 use Exception;
 use SilverStripe\Control\Director;
 use SilverStripe\CronTask\Interfaces\CronTask;
 use SilverStripe\Dev\BuildTask;
-
-
-
 
 class EmailQueueProcessor extends BuildTask
 {

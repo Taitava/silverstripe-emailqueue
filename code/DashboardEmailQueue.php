@@ -3,16 +3,10 @@
 namespace Taitava\SilverstripeEmailQueue;
 
 use DashboardPanel;
-
-
 use SilverStripe\Forms\NumericField;
 use SilverStripe\ORM\ArrayList;
 
-
-
-if (class_exists('DashboardPanel'))
-{
-	
+if (class_exists('DashboardPanel')) {
 	/**
 	 * Class DashboardEmailQueue
 	 *
