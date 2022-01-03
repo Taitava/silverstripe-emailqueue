@@ -1,5 +1,14 @@
 <?php
 
+namespace Taitava\SilverstripeEmailQueue;
+
+use SS_Object;
+use CronTask;
+use Injector;
+use Director;
+use Controller;
+
+
 if (EmailQueueProcessor::CronTaskInstalled())
 {
 	// Support SilverStripe versions lower than 3.7:

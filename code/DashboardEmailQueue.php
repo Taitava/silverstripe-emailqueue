@@ -1,5 +1,12 @@
 <?php
 
+namespace Taitava\SilverstripeEmailQueue;
+
+use DashboardPanel;
+use NumericField;
+use ArrayList;
+
+
 if (class_exists('DashboardPanel'))
 {
 	

@@ -1,5 +1,13 @@
 <?php
 
+namespace Taitava\SilverstripeEmailQueue;
+
+use DataExtension;
+use FieldList;
+use Tab;
+use TextareaField;
+
+
 
 class EmailQueueSiteConfigExtension extends DataExtension
 {

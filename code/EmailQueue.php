@@ -1,5 +1,14 @@
 <?php
 
+namespace Taitava\SilverstripeEmailQueue;
+
+use DataObject;
+use DateTime;
+use Email;
+use SQLUpdate;
+use Member;
+
+
 /**
  * Class EmailQueue
  *

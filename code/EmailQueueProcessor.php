@@ -1,5 +1,12 @@
 <?php
 
+namespace Taitava\SilverstripeEmailQueue;
+
+use BuildTask;
+use Director;
+use Exception;
+
+
 
 class EmailQueueProcessor extends BuildTask
 {

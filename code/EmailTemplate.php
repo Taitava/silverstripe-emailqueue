@@ -1,5 +1,16 @@
 <?php
 
+namespace Taitava\SilverstripeEmailQueue;
+
+use Email;
+use Exception;
+use RuntimeException;
+use SiteConfig;
+use Member;
+use InvalidArgumentException;
+use Director;
+
+
 
 abstract class EmailTemplate extends Email
 {
