@@ -2,20 +2,13 @@
 
 namespace Taitava\SilverstripeEmailQueue;
 
-
 use Exception;
 use RuntimeException;
-
-
 use InvalidArgumentException;
-
 use SilverStripe\Control\Email\Email;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Security\Member;
 use SilverStripe\Control\Director;
-
-
-
 
 abstract class EmailTemplate extends Email
 {
@@ -135,31 +128,33 @@ abstract class EmailTemplate extends Email
 	 * @return Email
 	 * @throws Exception
 	 */
-	public function setTo($val)
+	public function setTo($address, $name = null)
 	{
-		$val = $this->resolve_email_address($val);
-		
-		return parent::setTo($val);
+		$address = $this->resolve_email_address($address);
+
+		return parent::setTo($address, $name);
 	}
 	
-	public function addTo($email_address)
+	public function addTo($address, $name = null)
 	{
-		$email_address = $this->resolve_email_address($email_address);
-		if (empty($this->to))
-		{
-			$this->to = $email_address;
+		$address = $this->resolve_email_address($address);
+
+		if (empty($this->to)) {
+			$this->to = $address;
+		} else {
+			$this->to .= ",$address";
 		}
-		else
-		{
-			$this->to .= ",$email_address";
-		}
+
+		return $this;
 	}
 	
-	public function removeTo($email_address)
+	public function removeTo($address)
 	{
-		$this->to = str_ireplace($email_address, '', $this->to); //Do the actual email address removal
+		$this->to = str_ireplace($address, '', $this->to); //Do the actual email address removal
 		$this->to = str_replace(',,', ',', $this->to); //Ensure that the removal does not leave two adjacent commas
 		$this->to = preg_replace('/,$/', '', $this->to); //Ensure that removal does not leave a trailing comma. (This check may be not needed, but do it just in case).
+
+		return $this;
 	}
 	
 	public function forTemplate()
@@ -242,12 +237,4 @@ abstract class EmailTemplate extends Email
 	{
 		return Director::isDev() || Director::isTest();
 	}
-}
-
-interface EmailAddressProvider
-{
-	/**
-	 * @return string[]
-	 */
-	public function getEmailAddresses();
 }
