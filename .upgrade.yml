@@ -1,0 +1,8 @@
+mappings:
+  EmailQueueProcessor: Taitava\SilverstripeEmailQueue\EmailQueueProcessor
+  EmailQueue: Taitava\SilverstripeEmailQueue\EmailQueue
+  EmailTemplate: Taitava\SilverstripeEmailQueue\EmailTemplate
+  EmailAddressProvider: Taitava\SilverstripeEmailQueue\EmailAddressProvider
+  EmailQueueProcessorCronTask: Taitava\SilverstripeEmailQueue\EmailQueueProcessorCronTask
+  DashboardEmailQueue: Taitava\SilverstripeEmailQueue\DashboardEmailQueue
+  EmailQueueSiteConfigExtension: Taitava\SilverstripeEmailQueue\EmailQueueSiteConfigExtension
