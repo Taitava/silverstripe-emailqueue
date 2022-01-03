@@ -2,9 +2,13 @@
 
 namespace Taitava\SilverstripeEmailQueue;
 
-use BuildTask;
-use Director;
+
+
 use Exception;
+use SilverStripe\Control\Director;
+use SilverStripe\CronTask\Interfaces\CronTask;
+use SilverStripe\Dev\BuildTask;
+
 
 
 
@@ -72,7 +76,7 @@ class EmailQueueProcessor extends BuildTask
 	 */
 	public static function CronTaskInstalled()
 	{
-		return interface_exists('CronTask');
+		return interface_exists(CronTask::class);
 	}
 	
 }

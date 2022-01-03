@@ -2,13 +2,18 @@
 
 namespace Taitava\SilverstripeEmailQueue;
 
-use Email;
+
 use Exception;
 use RuntimeException;
-use SiteConfig;
-use Member;
+
+
 use InvalidArgumentException;
-use Director;
+
+use SilverStripe\Control\Email\Email;
+use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\Security\Member;
+use SilverStripe\Control\Director;
+
 
 
 

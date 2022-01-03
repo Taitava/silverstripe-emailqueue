@@ -2,10 +2,16 @@
 
 namespace Taitava\SilverstripeEmailQueue;
 
-use DataExtension;
-use FieldList;
-use Tab;
-use TextareaField;
+
+
+
+
+use SilverStripe\Forms\FieldList;
+use Taitava\SilverstripeEmailQueue\EmailQueue;
+use SilverStripe\Forms\Tab;
+use SilverStripe\Forms\TextareaField;
+use SilverStripe\ORM\DataExtension;
+
 
 
 
@@ -17,7 +23,7 @@ class EmailQueueSiteConfigExtension extends DataExtension
 	
 	public function updateCMSFields(FieldList $fields)
 	{
-		$fields->addFieldToTab('Root', new Tab('EmailQueue', _t('EmailQueueSiteConfigExtension.EmailQueueTab', 'Email Queue')));
+		$fields->addFieldToTab('Root', new Tab(EmailQueue::class, _t('EmailQueueSiteConfigExtension.EmailQueueTab', 'Email Queue')));
 		$fields->addFieldsToTab('Root.EmailQueue', [
 			$email_whitelist_field = new TextareaField('TestEmailAddressWhitelist', _t('EmailQueueSiteConfigExtension.TestEmailAddressWhitelist', 'Email addresses that are allowed on testing environments'), $this->owner->TestEmailAddressWhitelist),
 		]);

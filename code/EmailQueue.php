@@ -2,11 +2,17 @@
 
 namespace Taitava\SilverstripeEmailQueue;
 
-use DataObject;
+
 use DateTime;
-use Email;
-use SQLUpdate;
-use Member;
+
+
+
+use SilverStripe\Control\Email\Email;
+use Taitava\SilverstripeEmailQueue\EmailQueue;
+use SilverStripe\ORM\Queries\SQLUpdate;
+use SilverStripe\Security\Member;
+use SilverStripe\ORM\DataObject;
+
 
 
 /**
@@ -95,7 +101,7 @@ class EmailQueue extends DataObject
 	 */
 	public function UpdateStatus($status)
 	{
-		$update = new SQLUpdate('EmailQueue', ['Status' => $status], ['ID' => $this->ID]);
+		$update = new SQLUpdate(EmailQueue::class, ['Status' => $status], ['ID' => $this->ID]);
 		$update->execute();
 		$this->Status = $status;
 		//TODO: Now SilverStripe thinks that the Status field is 'changed', i.e. has a new value which should be written to the database. This is not a big issue, I think it would most likely affect just a possible write() call, which would include the Status field unnecessarily. If this is wanted to be improved, one could find a way to mark the Status field as "not changed".

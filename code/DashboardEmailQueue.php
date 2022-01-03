@@ -3,8 +3,11 @@
 namespace Taitava\SilverstripeEmailQueue;
 
 use DashboardPanel;
-use NumericField;
-use ArrayList;
+
+
+use SilverStripe\Forms\NumericField;
+use SilverStripe\ORM\ArrayList;
+
 
 
 if (class_exists('DashboardPanel'))
