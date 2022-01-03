@@ -226,19 +226,16 @@ class EmailQueue extends DataObject
 	
 	private function import_data_from_email_template(EmailTemplate $email_template)
 	{
-		$this->EmailClass = $email_template->class;
+		$this->EmailClass = get_class($email_template);
 		$fields = (array) static::config()->get('email_field_map');
-		foreach ($fields as $template_field => $queue_field)
-		{
+
+		foreach ($fields as $template_field => $queue_field) {
 			//Get value
-			if (preg_match('/\(\)$/', $template_field))
-			{
+			if (preg_match('/\(\)$/', $template_field)) {
 				//The field is a method
 				$method = preg_replace('/\(\)$/', '', $template_field);
 				$field_value = $email_template->$method();
-			}
-			else
-			{
+			} else {
 				//The field is a simple property
 				$field_value = $email_template->$template_field;
 			}

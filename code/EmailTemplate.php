@@ -68,7 +68,7 @@ abstract class EmailTemplate extends Email
 	public function send($messageID = null, $queue = true)
 	{
 		if (empty($this->body)) $this->renderBody();
-		if (!$this->To())
+		if (!$this->getTo())
 		{
 			if (is_object($this->queue_recipient_member))
 			{
@@ -86,9 +86,9 @@ abstract class EmailTemplate extends Email
 		{
 			//If we are sending email on dev/test environment, ensure that mail is only sent to admin email addresses.
 			$overriding_address = static::TestSiteOverridingAddress();
-			if (!$this->test_site_is_email_whitelisted($this->To())) $this->setTo($overriding_address);
-			if ($this->Cc() && !$this->test_site_is_email_whitelisted($this->Cc())) $this->setCc($overriding_address);
-			if ($this->Bcc() && !$this->test_site_is_email_whitelisted($this->Bcc())) $this->setBcc($overriding_address);
+			if (!$this->test_site_is_email_whitelisted($this->getTo())) $this->setTo($overriding_address);
+			if ($this->getCc() && !$this->test_site_is_email_whitelisted($this->getCc())) $this->setCc($overriding_address);
+			if ($this->getBcc() && !$this->test_site_is_email_whitelisted($this->getBcc())) $this->setBcc($overriding_address);
 		}
 		
 		if ($queue || $this->getSendingSchedule())
