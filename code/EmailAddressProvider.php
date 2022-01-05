@@ -4,8 +4,8 @@ namespace Taitava\SilverstripeEmailQueue;
 
 interface EmailAddressProvider
 {
-	/**
-	 * @return string[]
-	 */
-	public function getEmailAddresses();
+    /**
+     * @return string[]
+     */
+    public function getEmailAddresses();
 }
