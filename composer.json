@@ -14,7 +14,7 @@
   "keywords": ["silverstripe","email"],
   "autoload": {
     "psr-4": {
-      "Taitava\\SilverstripeEmailQueue\\": "code/"
+      "Taitava\\SilverstripeEmailQueue\\": "src/"
     }
   },
   "authors": [
