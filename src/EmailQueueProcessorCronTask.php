@@ -42,14 +42,15 @@ class EmailQueueProcessorCronTask implements CronTask
     public function process()
     {
         /**
- * @var EmailQueueProcessor $processor 
-*/
+         * @var EmailQueueProcessor $processor 
+         */
         $processor = Injector::inst()->create(EmailQueueProcessor::class);
         if (!$processor->isEnabled()) {
             $nl = Director::is_cli() ? "\n" : '<br>';
             echo "EmailQueueProcessor is disabled.{$nl}";
             return;
         }
+
         $processor->run(Controller::curr()->getRequest());
     }
 }

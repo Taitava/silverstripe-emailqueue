@@ -27,47 +27,57 @@ class EmailQueue extends DataObject
     private static $plural_name = 'Sähköpostiviestit';
     
     private static $db = [
-    'From' => 'Text',
-    'To' => 'Text',
-    'Subject' => 'Text',
-    'Body' => 'Text',
-    'Status' => "Enum('queued,in-progress,sent,failed','queued')",
-    'EmailClass' => 'Varchar(255)',
-    'UniqueString' => 'Varchar(255)',
-    'SendingSchedule' => 'Datetime',
+        'From' => 'Text',
+        'To' => 'Text',
+        'Subject' => 'Text',
+        'Body' => 'Text',
+        'Status' => "Enum('queued,in-progress,sent,failed','queued')",
+        'EmailClass' => 'Varchar(255)',
+        'UniqueString' => 'Varchar(255)',
+        'SendingSchedule' => 'Datetime',
     ];
     
     private static $email_field_map = [
-    //EmailTemplate field    => EmailQueue field
-    'From()' => 'From',
-    'To()' => 'To',
-    'Subject()' => 'Subject',
-    'Body()' => 'Body',
+        //EmailTemplate field    => EmailQueue field
+        'From()' => 'From',
+        'To()' => 'To',
+        'Subject()' => 'Subject',
+        'Body()' => 'Body',
     ];
     
     public function populateDefaults()
     {
         parent::populateDefaults();
-        
+
         $this->SendingSchedule = (new DateTime)->getTimestamp(); // Current time
-        
+
         return $this;
     }
     
     public function Send()
     {
-        $email = new Email($this->From, $this->To, $this->Subject, $this->Body);
-        
+        $email = new Email(
+            $this->From,
+            $this->To,
+            $this->Subject,
+            $this->Body
+        );
+
         // Call extensions and give them a change to cancel the sending
         $onBeforeSend_results = $this->extend('onBeforeSend', $email);
         $send = true;
+
         array_walk(
-            $onBeforeSend_results, function ($result) use (&$send) {
-                if (!$result) { $send = false;
+            $onBeforeSend_results,
+            function ($result) use (&$send) {
+                if (!$result) {
+                    $send = false;
                 }
             }
         );
-        if (!$send) { return false;
+
+        if (!$send) {
+            return false;
         }
         
         // Send the email message
@@ -78,13 +88,12 @@ class EmailQueue extends DataObject
             $this->Status = 'sent';
             $this->write();
             $this->extend('onAfterSendingSucceeded', $email);
-        }
-        else
-        {
+        } else {
             $this->Status = 'failed';
             $this->write();
             $this->extend('onAfterSendingFailed', $email);
         }
+
         $this->extend('onAfterSendingSucceededOrFailed', $email, $succeeded);
         return $succeeded;
     }
@@ -96,7 +105,11 @@ class EmailQueue extends DataObject
      */
     public function UpdateStatus($status)
     {
-        $update = new SQLUpdate(EmailQueue::class, ['Status' => $status], ['ID' => $this->ID]);
+        $update = new SQLUpdate(
+            EmailQueue::class,
+            ['Status' => $status],
+            ['ID' => $this->ID]
+        );
         $update->execute();
         $this->Status = $status;
         //TODO: Now SilverStripe thinks that the Status field is 'changed', i.e. has a new value which should be written to the database. This is not a big issue, I think it would most likely affect just a possible write() call, which would include the Status field unnecessarily. If this is wanted to be improved, one could find a way to mark the Status field as "not changed".
@@ -114,19 +127,33 @@ class EmailQueue extends DataObject
         $me = static::singleton();
         try // If any exceptions arise, try to make sure that we are able to call extensions in the 'finally' part
         {
-            $me->extend('onBeforeAddToQueue', $email_template, $recipient_member, $sending_schedule);
+            $me->extend(
+                'onBeforeAddToQueue',
+                $email_template,
+                $recipient_member,
+                $sending_schedule
+            );
             
             // Create a new EmailQueue object which will store the email data
             $email_queue = new static;
             $email_queue->import_data_from_email_template($email_template);
-            if ($sending_schedule) { $email_queue->SendingSchedule = $sending_schedule->getTimestamp(); // Send at a later time
+
+            // Send at a later time
+            if ($sending_schedule) {
+                $email_queue->SendingSchedule = $sending_schedule->getTimestamp();
             }
+
             $email_queue->write();
+        } finally {
+            $me->extend(
+                'onAfterAddToQueue',
+                $email_template,
+                $recipient_member,
+                $sending_schedule,
+                $email_queue
+            );
         }
-        finally
-        {
-            $me->extend('onAfterAddToQueue', $email_template, $recipient_member, $sending_schedule, $email_queue);
-        }
+
         return $email_queue;
     }
     
@@ -137,11 +164,14 @@ class EmailQueue extends DataObject
     public static function QueuedEmails($limit = null)
     {
         $emails = static::get()->filter('Status', 'queued');
-        if ($limit) { $emails = $emails->limit($limit);
+
+        if ($limit) {
+            $emails = $emails->limit($limit);
         }
+
         return $emails;
     }
-    
+
     /**
      * Returns a list of email messages that can be sent NOW.
      *
@@ -152,9 +182,10 @@ class EmailQueue extends DataObject
     public static function SendableEmails($limit = null)
     {
         $current_time = (new DateTime)->getTimestamp();
-        return static::QueuedEmails($limit)->filter('SendingSchedule:LessThanOrEqual', $current_time);
+        return static::QueuedEmails($limit)
+            ->filter('SendingSchedule:LessThanOrEqual', $current_time);
     }
-    
+
     /**
      * Returns a list of email messages that SHOULD NOT be sent yet, because they are scheduled to be sent later.
      *
@@ -165,7 +196,8 @@ class EmailQueue extends DataObject
     public static function ScheduledEmails($limit = null)
     {
         $current_time = (new DateTime)->getTimestamp();
-        return static::QueuedEmails($limit)->filter('SendingSchedule:GreaterThan', $current_time);
+        return static::QueuedEmails($limit)
+            ->filter('SendingSchedule:GreaterThan', $current_time);
     }
     
     /**
@@ -175,8 +207,11 @@ class EmailQueue extends DataObject
     public static function EmailsInProgress($limit = null)
     {
         $emails = static::get()->filter('Status', 'in-progress');
-        if ($limit) { $emails = $emails->limit($limit);
+
+        if ($limit) {
+            $emails = $emails->limit($limit);
         }
+
         return $emails;
     }
     
@@ -187,8 +222,11 @@ class EmailQueue extends DataObject
     public static function SentEmails($limit = null)
     {
         $emails = static::get()->filter('Status', 'sent');
-        if ($limit) { $emails = $emails->limit($limit);
+
+        if ($limit) {
+            $emails = $emails->limit($limit);
         }
+
         return $emails;
     }
     
@@ -199,8 +237,11 @@ class EmailQueue extends DataObject
     public static function FailedEmails($limit = null)
     {
         $emails = static::get()->filter('Status', 'failed');
-        if ($limit) { $emails = $emails->limit($limit);
+
+        if ($limit) {
+            $emails = $emails->limit($limit);
         }
+
         return $emails;
     }
     
@@ -225,12 +266,10 @@ class EmailQueue extends DataObject
      */
     public static function byUniqueString($email_template_class_name, $unique_string)
     {
-        return static::get()->filter(
-            [
+        return static::get()->filter([
             'EmailClass' => $email_template_class_name,
             'UniqueString' => $unique_string,
-            ]
-        )->first();
+        ])->first();
     }
     
     private function import_data_from_email_template(EmailTemplate $email_template)
@@ -239,7 +278,7 @@ class EmailQueue extends DataObject
         $fields = (array) static::config()->get('email_field_map');
 
         foreach ($fields as $template_field => $queue_field) {
-            //Get value
+            // Get value
             if (preg_match('/\(\)$/', $template_field)) {
                 //The field is a method
                 $method = preg_replace('/\(\)$/', '', $template_field);

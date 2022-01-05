@@ -66,40 +66,48 @@ abstract class EmailTemplate extends Email
      */
     public function send($messageID = null, $queue = true)
     {
-        if (empty($this->body)) { $this->renderBody();
+        if (empty($this->body)) {
+            $this->renderBody();
         }
-        if (!$this->getTo()) {
+
+        if (empty($this->getTo())) {
             if (is_object($this->queue_recipient_member)) {
                 // Get recipient email address from a Member
                 $this->setTo($this->queue_recipient_member);
-            }
-            else
-            {
+            } else {
                 // We do not have a recipient address nor a Member
                 throw new Exception(__METHOD__ . ': No recipient defined in To field.');
             }
         }
-        
+
         if ($this->isDevOrTest()) {
-            //If we are sending email on dev/test environment, ensure that mail is only sent to admin email addresses.
+            // If we are sending email on dev/test environment, ensure that mail is only sent to admin email addresses.
             $overriding_address = static::TestSiteOverridingAddress();
-            if (!$this->test_site_is_email_whitelisted($this->getTo())) { $this->setTo($overriding_address);
+
+            if (!$this->test_site_is_email_whitelisted($this->getTo())) {
+                $this->setTo($overriding_address);
             }
-            if ($this->getCc() && !$this->test_site_is_email_whitelisted($this->getCc())) { $this->setCc($overriding_address);
+            if ($this->getCc() && !$this->test_site_is_email_whitelisted($this->getCc())) {
+                $this->setCc($overriding_address);
             }
-            if ($this->getBcc() && !$this->test_site_is_email_whitelisted($this->getBcc())) { $this->setBcc($overriding_address);
+            if ($this->getBcc() && !$this->test_site_is_email_whitelisted($this->getBcc())) {
+                $this->setBcc($overriding_address);
             }
         }
-        
+
         if ($queue || $this->getSendingSchedule()) {
-            //Queue for sending later via EmailQueueProcessor cron task
-            if (!is_object($this->queue_recipient_member)) { throw new RuntimeException(__METHOD__ . ': Email queueing cannot be used if queue_recipient_member is not set.');
+            // Queue for sending later via EmailQueueProcessor cron task
+            if (!is_object($this->queue_recipient_member)) {
+                throw new RuntimeException(__METHOD__ . ': Email queueing cannot be used if queue_recipient_member is not set.');
             }
-            return EmailQueue::AddToQueue($this, $this->queue_recipient_member, $this->getSendingSchedule());
-        }
-        else
-        {
-            //Send immediately
+
+            return EmailQueue::AddToQueue(
+                $this,
+                $this->queue_recipient_member,
+                $this->getSendingSchedule()
+            );
+        } else {
+            // Send immediately
             return parent::send($messageID);
         }
     }
@@ -112,15 +120,23 @@ abstract class EmailTemplate extends Email
      *
      * @return string
      */
-    public static function TestSiteOverridingAddress()
+    public static function TestSiteOverridingAddress(): string
     {
-        return static::config()->admin_email_to;
+        return (string) static::config()->admin_email_to;
     }
     
-    private function test_site_is_email_whitelisted($email_address)
+    private function test_site_is_email_whitelisted($email_address): bool
     {
-        $whitelist = preg_split('/(\r\n|\r|\n)/', strtolower(SiteConfig::current_site_config()->TestEmailAddressWhitelist));
-        return in_array(strtolower($email_address), $whitelist);
+        $config = SiteConfig::current_site_config();
+        $whitelist = preg_split(
+            '/(\r\n|\r|\n)/',
+            strtolower($config->TestEmailAddressWhitelist)
+        );
+
+        return in_array(
+            strtolower($email_address),
+            $whitelist
+        );
     }
     
     /**
@@ -150,14 +166,18 @@ abstract class EmailTemplate extends Email
     
     public function removeTo($address)
     {
-        $this->to = str_ireplace($address, '', $this->to); //Do the actual email address removal
-        $this->to = str_replace(',,', ',', $this->to); //Ensure that the removal does not leave two adjacent commas
-        $this->to = preg_replace('/,$/', '', $this->to); //Ensure that removal does not leave a trailing comma. (This check may be not needed, but do it just in case).
+        // Do the actual email address removal
+        $this->to = str_ireplace($address, '', $this->to);
+        // Ensure that the removal does not leave two adjacent commas
+        $this->to = str_replace(',,', ',', $this->to);
+        // Ensure that removal does not leave a trailing comma.
+        // (This check may be not needed, but do it just in case).
+        $this->to = preg_replace('/,$/', '', $this->to);
 
         return $this;
     }
     
-    public function forTemplate()
+    public function forTemplate(): string
     {
         return (string) $this->renderWith(static::class, $this->rendering_variables);
     }
@@ -167,41 +187,51 @@ abstract class EmailTemplate extends Email
      *
      * This is automatically called during send(), but only if the current body is empty.
      */
-    public function renderBody()
+    public function renderBody(): self
     {
         $this->setBody($this->forTemplate());
+
+        return $this;
     }
     
     /**
-     * Ensures that the given value is a string containing either one email address or multiple comma separated email addresses. Accepts either a simple string, an array of strings or an object implementing the EmailAddressProvider interface as a parameter.
+     * Ensures that the given value is a string containing
+     * either one email address or multiple comma separated
+     * email addresses. Accepts either a simple string, an
+     * array of strings or an object implementing the
+     * EmailAddressProvider interface as a parameter.
      *
      * @param  string|string[]|Member|EmailAddressProvider $email_address
      * @return string
      * @throws Exception
      */
-    private function resolve_email_address($email_address)
+    private function resolve_email_address($email_address): string
     {
-        if (is_string($email_address)) { return $email_address;
+        if (is_string($email_address)) {
+            return $email_address;
         }
-        if (is_array($email_address)) { return $this->implode_email_addresses($email_address);
+        if (is_array($email_address)) {
+            return $this->implode_email_addresses($email_address);
         }
-        if ($email_address instanceof Member) { return $email_address->Email; //The Member class cannot be modified to implement the EmailAddressProvider interface, so exceptionally handle it here.
+        if ($email_address instanceof Member) {
+            // The Member class cannot be modified to implement
+            // the EmailAddressProvider interface, so exceptionally.
+            // handle it here.
+            return $email_address->Email;
         }
         if (!$email_address instanceof EmailAddressProvider) {
             throw new InvalidArgumentException(__METHOD__ . ': Parameter $email_address must either be a string or an instance of a class that implements the EmailAddressProvider interface.');
         }
+
         return $this->implode_email_addresses($email_address->getEmailAddresses());
     }
     
-    private function implode_email_addresses($email_addresses)
+    private function implode_email_addresses($email_addresses): string
     {
         return implode(',', $email_addresses);
     }
-    
-    /**
-     * @return array
-     */
-    public function getRenderingVariables()
+
+    public function getRenderingVariables(): array
     {
         return $this->rendering_variables;
     }
@@ -209,30 +239,27 @@ abstract class EmailTemplate extends Email
     /**
      * @param array $rendering_variables
      */
-    public function setRenderingVariables($rendering_variables)
+    public function setRenderingVariables(array $variables): self
     {
-        $this->rendering_variables = $rendering_variables;
+        $this->rendering_variables = $variables;
+        return $this;
     }
     
-    public function setRenderingVariable($variable, $value)
+    public function setRenderingVariable(string $variable, mixed $value): self
     {
         $this->rendering_variables[$variable] = $value;
+        return $this;
     }
-    
-    /**
-     * @return Member
-     */
-    public function getQueueRecipientMember()
+
+    public function getQueueRecipientMember(): Member
     {
         return $this->queue_recipient_member;
     }
-    
-    /**
-     * @param Member $queue_recipient_member
-     */
-    public function setQueueRecipientMember(Member $queue_recipient_member)
+
+    public function setQueueRecipientMember(Member $member): self
     {
-        $this->queue_recipient_member = $queue_recipient_member;
+        $this->queue_recipient_member = $member;
+        return $this;
     }
     
     private function isDevOrTest()
