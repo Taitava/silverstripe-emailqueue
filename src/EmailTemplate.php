@@ -5,6 +5,7 @@ namespace Taitava\SilverstripeEmailQueue;
 use Exception;
 use RuntimeException;
 use InvalidArgumentException;
+use LogicException;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Security\Member;
@@ -57,20 +58,27 @@ abstract class EmailTemplate extends Email
     {
         return null;
     }
+
+    public function getToJSON()
+    {
+        return json_encode($this->getTo());
+    }
     
     /**
      * @param  null $messageID
      * @param  bool $queue     Whether to put the message to a queue or send immediately. The latter is slower.
      * @return bool|EmailQueue If queueing is enabled, returns an EmailQueue instance, otherwise returns just true or false depending on if the sending succeeded or not. Note that if the current EmailTemplate instance defines a sending schedule (see getSendingSchedule()), queuing is always forced and setting this parameter to false will have no effect.
-     * @throws Exception
+     * 
+     * @throws LogicException
+     * @throws RuntimeException
      */
     public function send($messageID = null, $queue = true)
     {
-        if (empty($this->body)) {
+        if (empty($this->getBody())) {
             $this->renderBody();
         }
 
-        if (empty($this->getTo())) {
+        if (count($this->getTo()) == 0) {
             if (is_object($this->queue_recipient_member)) {
                 // Get recipient email address from a Member
                 $this->setTo($this->queue_recipient_member);
@@ -80,24 +88,29 @@ abstract class EmailTemplate extends Email
             }
         }
 
-        if ($this->isDevOrTest()) {
-            // If we are sending email on dev/test environment, ensure that mail is only sent to admin email addresses.
-            $overriding_address = static::TestSiteOverridingAddress();
+        // If we are sending email on dev/test environment, ensure that mail is only
+        // sent to admin or allowed email addresses.
+        $to = $this->getTo();
+        $to = $this->filterTestSiteRecipients($to);
 
-            if (!$this->test_site_is_email_whitelisted($this->getTo())) {
-                $this->setTo($overriding_address);
+        if ($this->isDevOrTest() && count($to) > 0) {
+            $cc = $this->filterTestSiteRecipients($this->getCC());
+            $bcc = $this->filterTestSiteRecipients($this->getBCC());
+
+            $this->setTo($to);
+
+            if (count($cc) > 0) {
+                $this->setCC($cc);
             }
-            if ($this->getCc() && !$this->test_site_is_email_whitelisted($this->getCc())) {
-                $this->setCc($overriding_address);
-            }
-            if ($this->getBcc() && !$this->test_site_is_email_whitelisted($this->getBcc())) {
-                $this->setBcc($overriding_address);
+
+            if (count($bcc) > 0) {
+                $this->setBCC($bcc);
             }
         }
 
         if ($queue || $this->getSendingSchedule()) {
             // Queue for sending later via EmailQueueProcessor cron task
-            if (!is_object($this->queue_recipient_member)) {
+            if (!is_object($this->getQueueRecipientMember())) {
                 throw new RuntimeException(__METHOD__ . ': Email queueing cannot be used if queue_recipient_member is not set.');
             }
 
@@ -111,7 +124,7 @@ abstract class EmailTemplate extends Email
             return parent::send($messageID);
         }
     }
-    
+
     /**
      * Returns the address that should be used in test site when overriding some none whitelisted email addresses.
      *
@@ -120,25 +133,65 @@ abstract class EmailTemplate extends Email
      *
      * @return string
      */
-    public static function TestSiteOverridingAddress(): string
+    public static function getTestSiteOverridingAddress(): string
     {
         return (string) static::config()->admin_email_to;
     }
-    
-    private function test_site_is_email_whitelisted($email_address): bool
-    {
+
+    /**
+     * Screen the recipient(s) email addresses and return only
+     * those supported?
+     *
+     * @param mixed $recipients
+     *
+     * @throws LogicException
+     *
+     * @return array
+     */
+    private function filterTestSiteRecipients(
+        $recipients,
+        bool $return_override = false
+    ): array {
+        if (!is_array($recipients)) {
+            $recipients = [$recipients => ""];
+        }
+
         $config = SiteConfig::current_site_config();
-        $whitelist = preg_split(
+        $override = static::getTestSiteOverridingAddress();
+        $approved = [];
+
+        // Get a list of whitelist addresses
+        $whitelist = array_filter(preg_split(
             '/(\r\n|\r|\n)/',
             strtolower($config->TestEmailAddressWhitelist)
-        );
+        ));
 
-        return in_array(
-            strtolower($email_address),
-            $whitelist
-        );
+        $i = 0;
+        foreach ($recipients as $address => $name) {
+            $address = trim(strtolower($address));
+
+            if (!empty($address) && in_array($address, $whitelist)) {
+                $approved[$address] = $name;
+            }
+
+            $i++;
+        }
+
+        if (count($approved) > 0) {
+            return $approved;
+        }
+
+        if (empty($override) && $return_override) {
+            throw new LogicException("No default admin address available");
+        }
+
+        if (empty($override)) {
+            return [];
+        }
+
+        return [$override => ""];
     }
-    
+
     /**
      * @param  $val
      * @return Email
@@ -146,35 +199,14 @@ abstract class EmailTemplate extends Email
      */
     public function setTo($address, $name = null)
     {
-        $address = $this->resolve_email_address($address);
-
+        $address = $this->resolveEmailAddresses($address);
         return parent::setTo($address, $name);
     }
     
     public function addTo($address, $name = null)
     {
-        $address = $this->resolve_email_address($address);
-
-        if (empty($this->to)) {
-            $this->to = $address;
-        } else {
-            $this->to .= ",$address";
-        }
-
-        return $this;
-    }
-    
-    public function removeTo($address)
-    {
-        // Do the actual email address removal
-        $this->to = str_ireplace($address, '', $this->to);
-        // Ensure that the removal does not leave two adjacent commas
-        $this->to = str_replace(',,', ',', $this->to);
-        // Ensure that removal does not leave a trailing comma.
-        // (This check may be not needed, but do it just in case).
-        $this->to = preg_replace('/,$/', '', $this->to);
-
-        return $this;
+        $address = $this->resolveEmailAddresses($address);
+        return parent::addTo($address, $name);
     }
     
     public function forTemplate(): string
@@ -195,40 +227,38 @@ abstract class EmailTemplate extends Email
     }
     
     /**
-     * Ensures that the given value is a string containing
-     * either one email address or multiple comma separated
-     * email addresses. Accepts either a simple string, an
-     * array of strings or an object implementing the
-     * EmailAddressProvider interface as a parameter.
+     * Ensures that the given addresses are strings
+     * containing an email address that has no whitespace.
+     * 
+     * Accepts either an array of strings or an object
+     * implementing the EmailAddressProvider interface
+     * as a parameter.
      *
      * @param  string|string[]|Member|EmailAddressProvider $email_address
      * @return string
      * @throws Exception
      */
-    private function resolve_email_address($email_address): string
+    private function resolveEmailAddresses($address): array
     {
-        if (is_string($email_address)) {
-            return $email_address;
-        }
-        if (is_array($email_address)) {
-            return $this->implode_email_addresses($email_address);
-        }
-        if ($email_address instanceof Member) {
-            // The Member class cannot be modified to implement
-            // the EmailAddressProvider interface, so exceptionally.
-            // handle it here.
-            return $email_address->Email;
-        }
-        if (!$email_address instanceof EmailAddressProvider) {
-            throw new InvalidArgumentException(__METHOD__ . ': Parameter $email_address must either be a string or an instance of a class that implements the EmailAddressProvider interface.');
+        if (is_string($address)) {
+            return [trim($address)];
         }
 
-        return $this->implode_email_addresses($email_address->getEmailAddresses());
-    }
-    
-    private function implode_email_addresses($email_addresses): string
-    {
-        return implode(',', $email_addresses);
+        if (is_array($address)) {
+            return array_map('trim', $address);
+        }
+
+        $message = __METHOD__ . ": $address must implement EmailAddressProvider interface.";
+
+        // Members cannot be extended to implement EmailAddressProvider
+        // so an extension adds this method manually
+        if ($address instanceof Member ||
+            $address instanceof EmailAddressProvider
+        ) {
+            return $address->getEmailAddresses();
+        }
+
+        throw new InvalidArgumentException($message);
     }
 
     public function getRenderingVariables(): array
