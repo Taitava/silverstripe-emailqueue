@@ -14,8 +14,13 @@
   "keywords": ["silverstripe","email"],
   "autoload": {
     "psr-4": {
-      "Taitava\\SilverstripeEmailQueue\\": "src/"
+      "Taitava\\SilverstripeEmailQueue\\": "src/",
+      "Taitava\\SilverstripeEmailQueue\\Tests\\": "tests/"
     }
+  },
+  "scripts": {
+      "lint": "vendor/bin/phpcs src/ tests/",
+      "lint-clean": "vendor/bin/phpcbf src/ tests/"
   },
   "authors": [
     {
