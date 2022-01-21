@@ -2,14 +2,15 @@
 
 namespace Taitava\SilverstripeEmailQueue;
 
+use DateTime;
 use Exception;
+use LogicException;
 use RuntimeException;
 use InvalidArgumentException;
-use LogicException;
-use SilverStripe\Control\Email\Email;
-use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Security\Member;
 use SilverStripe\Control\Director;
+use SilverStripe\Control\Email\Email;
+use SilverStripe\SiteConfig\SiteConfig;
 
 abstract class EmailTemplate extends Email
 {
@@ -57,11 +58,6 @@ abstract class EmailTemplate extends Email
     protected function getSendingSchedule()
     {
         return null;
-    }
-
-    public function getToJSON()
-    {
-        return json_encode($this->getTo());
     }
     
     /**
@@ -113,12 +109,15 @@ abstract class EmailTemplate extends Email
             if (!is_object($this->getQueueRecipientMember())) {
                 throw new RuntimeException(__METHOD__ . ': Email queueing cannot be used if queue_recipient_member is not set.');
             }
+            $factory = QueueFactory::create($this);
+            $schedule = $this->getSendingSchedule();
 
-            return EmailQueue::AddToQueue(
-                $this,
-                $this->queue_recipient_member,
-                $this->getSendingSchedule()
-            );
+            if (!empty($schedule)) {
+                $factory->setSendingSchedule($schedule);
+            }
+
+            $factory->addToQueue();
+            return $factory->getCurrQueueItem();
         } else {
             // Send immediately
             return parent::send($messageID);
