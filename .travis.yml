@@ -8,10 +8,8 @@ services:
 
 matrix:
   include:
-    - php: 7.2
-      env: DB=PGSQL INSTALLER_VERSION=4.x-dev PHPUNIT_TEST=1 UNIT_TESTS_RUNNING=1
-    - php: 7.2
-      env: DB=MYSQL INSTALLER_VERSION=4.x-dev PHPUNIT_TEST=1 UNIT_TESTS_RUNNING=1
+    - php: 7.3
+      env: DB=GSQL INSTALLER_VERSION=4.x-dev PHPUNIT_TEST=1 UNIT_TESTS_RUNNING=1
     - php: 7.3
       env: DB=MYSQL INSTALLER_VERSION=4.x-dev PHPUNIT_TEST=1 UNIT_TESTS_RUNNING=1
     - php: 7.4
