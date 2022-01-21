@@ -28,6 +28,10 @@ class EmailContact extends DataObject
      */
     public function getRFC5322(): string
     {
+        if (empty($this->Name)) {
+            return $this->Address;
+        }
+
         return "{$this->Name} <{$this->Address}>";
     }
 
