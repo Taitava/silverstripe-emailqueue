@@ -34,5 +34,7 @@
       "homepage": "http://ilateralweb.co.uk",
       "role": "Developer"
     }
-  ]
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
