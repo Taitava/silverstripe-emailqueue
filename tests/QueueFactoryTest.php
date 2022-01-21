@@ -16,6 +16,33 @@ class QueueFactoryTest extends SapphireTest
         EmailQueueContact::class
     ];
 
+    public function testAddToQueueSimple()
+    {
+        $email = TestTemplate::create()
+            ->setFrom('from@test.com')
+            ->setTo('to@test.com')
+            ->setSubject("A test email")
+            ->setBody("Test Body");
+
+        $factory = QueueFactory::create($email)->addToQueue();
+
+        $this->assertEquals(1, EmailQueue::get()->count());
+        $this->assertEquals(1, EmailQueue::QueuedEmails()->count());
+
+        $queued = EmailQueue::QueuedEmails()->first();
+
+        $this->assertEquals('from@test.com', $queued->From()->first()->Address);
+        $this->assertEquals('', $queued->From()->first()->Name);
+        $this->assertEquals('from@test.com', $queued->getFromString());
+        $this->assertEquals('to@test.com', $queued->To()->first()->Address);
+        $this->assertEquals('', $queued->To()->first()->Name);
+        $this->assertEquals('to@test.com', $queued->getToString());
+        $this->assertEquals('A test email', $queued->Subject);
+        $this->assertEquals('Test Body', $queued->Body);
+
+        $factory->getCurrQueueItem()->delete();
+    }
+
     public function testAddToQueue()
     {
         $email = TestTemplate::create()
