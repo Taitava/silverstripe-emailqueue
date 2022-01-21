@@ -90,9 +90,9 @@ class EmailQueue extends DataObject
     /**
      * Get a list of RFC addresses from the provided
      * list
-     * 
+     *
      * @param ManyManyThroughList $list
-     * 
+     *
      * @return string[]
      */
     protected function getRFCArray(ManyManyThroughList $list): array
@@ -100,7 +100,7 @@ class EmailQueue extends DataObject
         $return = [];
 
         /**
- * @var EmailQueueContact $contact 
+ * @var EmailQueueContact $contact
 */
         foreach ($list as $contact) {
             $return[] = $contact->getRFC5322();
@@ -374,7 +374,7 @@ class EmailQueue extends DataObject
      *
      * @param array   $contacts List of contacts, formatted $address => $name
      * @param SS_List $list     List of contacts to add array to
-     * 
+     *
      * @return self
      */
     protected function importContactsToList(array $contacts, SS_List $list)
@@ -392,7 +392,7 @@ class EmailQueue extends DataObject
      * value pairs ($address => $name) so convert data to list
      *
      * @param mixed $data Either string or array with format $address => $name
-     * 
+     *
      * @return self
      */
     public function importFrom($data): self
@@ -415,7 +415,7 @@ class EmailQueue extends DataObject
      * pairs ($address => $name) so convert data to list
      *
      * @param mixed $data Either string or array with format $address => $name
-     * 
+     *
      * @return self
      */
     public function importTo($data): self

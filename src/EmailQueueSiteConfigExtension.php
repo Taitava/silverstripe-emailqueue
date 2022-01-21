@@ -21,7 +21,8 @@ class EmailQueueSiteConfigExtension extends DataExtension
             $this->owner->TestEmailAddressWhitelist
         )->setDescription(
             _t(
-                'EmailQueueSiteConfigExtension.TestEmailAddressWhitelistDescription', 'On testing environments, email messages are not allowed to be sent to any other addresses than the ones mentioned above. Enter one email address per line. If an email is tried to be sent to an address not in this list, the address will be changed to {overriding_address}.',
+                'EmailQueueSiteConfigExtension.TestEmailAddressWhitelistDescription',
+                'On testing environments, email messages are not allowed to be sent to any other addresses than the ones mentioned above. Enter one email address per line. If an email is tried to be sent to an address not in this list, the address will be changed to {overriding_address}.',
                 '',
                 ['overriding_address' => EmailTemplate::getTestSiteOverridingAddress()]
             )

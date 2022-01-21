@@ -14,7 +14,7 @@ class MemberExtension extends DataExtension
     public function getEmailAddresses(): array
     {
         /**
- * @var Member 
+ * @var Member
 */
         $owner = $this->getOwner();
         return [trim($owner->Email) => $owner->Name];

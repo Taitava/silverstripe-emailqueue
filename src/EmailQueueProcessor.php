@@ -47,7 +47,7 @@ class EmailQueueProcessor extends BuildTask
         }
 
         /**
-         * @var EmailQueue[] $email_messages_array 
+         * @var EmailQueue[] $email_messages_array
          */
         $email_messages_array = $email_messages->toArray(); //For some reason it's not possible to iterate a DataList instance twice, so convert it to an array.
 

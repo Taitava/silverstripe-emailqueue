@@ -70,7 +70,7 @@ abstract class EmailTemplate extends Email
      * @param  null $messageID
      * @param  bool $queue     Whether to put the message to a queue or send immediately. The latter is slower.
      * @return bool|EmailQueue If queueing is enabled, returns an EmailQueue instance, otherwise returns just true or false depending on if the sending succeeded or not. Note that if the current EmailTemplate instance defines a sending schedule (see getSendingSchedule()), queuing is always forced and setting this parameter to false will have no effect.
-     * 
+     *
      * @throws LogicException
      * @throws RuntimeException
      */
@@ -238,7 +238,7 @@ abstract class EmailTemplate extends Email
     /**
      * Ensures that the given addresses are strings
      * containing an email address that has no whitespace.
-     * 
+     *
      * Accepts either an array of strings or an object
      * implementing the EmailAddressProvider interface
      * as a parameter.
@@ -261,7 +261,7 @@ abstract class EmailTemplate extends Email
 
         // Members cannot be extended to implement EmailAddressProvider
         // so an extension adds this method manually
-        if ($address instanceof Member 
+        if ($address instanceof Member
             || $address instanceof EmailAddressProvider
         ) {
             return $address->getEmailAddresses();

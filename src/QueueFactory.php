@@ -126,7 +126,7 @@ class QueueFactory
      * Get the email template that needs to be queued
      *
      * @return EmailTemplate
-     */ 
+     */
     public function getTemplate()
     {
         return $this->template;
@@ -138,7 +138,7 @@ class QueueFactory
      * @param EmailTemplate $template
      *
      * @return self
-     */ 
+     */
     public function setTemplate(EmailTemplate $template)
     {
         $this->template = $template;
@@ -149,7 +149,7 @@ class QueueFactory
      * Get optional - When is this email intended to be sent?
      *
      * @return DateTime
-     */ 
+     */
     public function getSendingSchedule()
     {
         return $this->sending_schedule;
@@ -161,7 +161,7 @@ class QueueFactory
      * @param DateTime $sending_schedule
      *
      * @return self
-     */ 
+     */
     public function setSendingSchedule(DateTime $sending_schedule)
     {
         $this->sending_schedule = $sending_schedule;
@@ -172,7 +172,7 @@ class QueueFactory
      * Get Current Email Queue Item
      *
      * @return EmailQueue
-     */ 
+     */
     public function getCurrQueueItem()
     {
         return $this->curr_queue_item;

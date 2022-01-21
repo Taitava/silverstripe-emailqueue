@@ -6,7 +6,7 @@ use SilverStripe\ORM\DataObject;
 
 /**
  * A standardised cached contact that can be attached
- * to an email 
+ * to an email
  */
 class EmailContact extends DataObject
 {
