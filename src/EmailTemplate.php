@@ -10,6 +10,7 @@ use InvalidArgumentException;
 use SilverStripe\Security\Member;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\SiteConfig\SiteConfig;
 
 abstract class EmailTemplate extends Email
@@ -33,7 +34,12 @@ abstract class EmailTemplate extends Email
         parent::__construct();
         
         //Automatically set from and to addresses
-        $this->setFrom(Email::config()->admin_email);
+        $admin_email = Config::inst()->get(Email::class, 'admin_email');
+
+        if (!empty($admin_email) && is_string($admin_email)) {
+            $this->setFrom($admin_email);
+        }
+
         if ($this->is_internal_message) {
             $this->setTo(static::config()->admin_email_to);
         }
