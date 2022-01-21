@@ -160,10 +160,12 @@ abstract class EmailTemplate extends Email
         $approved = [];
 
         // Get a list of whitelist addresses
-        $whitelist = array_filter(preg_split(
-            '/(\r\n|\r|\n)/',
-            strtolower($config->TestEmailAddressWhitelist)
-        ));
+        $whitelist = array_filter(
+            preg_split(
+                '/(\r\n|\r|\n)/',
+                strtolower($config->TestEmailAddressWhitelist)
+            )
+        );
 
         $i = 0;
         foreach ($recipients as $address => $name) {
@@ -251,8 +253,8 @@ abstract class EmailTemplate extends Email
 
         // Members cannot be extended to implement EmailAddressProvider
         // so an extension adds this method manually
-        if ($address instanceof Member ||
-            $address instanceof EmailAddressProvider
+        if ($address instanceof Member 
+            || $address instanceof EmailAddressProvider
         ) {
             return $address->getEmailAddresses();
         }

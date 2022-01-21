@@ -99,7 +99,9 @@ class EmailQueue extends DataObject
     {
         $return = [];
 
-        /** @var EmailQueueContact $contact */
+        /**
+ * @var EmailQueueContact $contact 
+*/
         foreach ($list as $contact) {
             $return[] = $contact->getRFC5322();
         }
@@ -358,18 +360,20 @@ class EmailQueue extends DataObject
      */
     public static function byUniqueString($email_template_class_name, $unique_string)
     {
-        return static::get()->filter([
+        return static::get()->filter(
+            [
             'EmailClass' => $email_template_class_name,
             'UniqueString' => $unique_string,
-        ])->first();
+            ]
+        )->first();
     }
 
     /**
      * Handle the grunt work of importing a contacts array
      * into one of the email lists
      *
-     * @param array $contacts List of contacts, formatted $address => $name
-     * @param SS_List $list List of contacts to add array to
+     * @param array   $contacts List of contacts, formatted $address => $name
+     * @param SS_List $list     List of contacts to add array to
      * 
      * @return self
      */

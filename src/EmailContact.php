@@ -49,10 +49,12 @@ class EmailContact extends DataObject
         $write = false;
 
         if (empty($contact)) {
-            $contact = self::create([
+            $contact = self::create(
+                [
                 'Address' => $address,
                 'Name' => $name
-            ]);
+                ]
+            );
             $write = true;
         }
 

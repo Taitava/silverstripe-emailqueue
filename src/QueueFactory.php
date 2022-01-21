@@ -67,7 +67,8 @@ class QueueFactory
      * @return self
      * @throws LogicException
      */
-    public function addToQueue() {
+    public function addToQueue()
+    {
         $queue_class = Config::inst()->get(__CLASS__, 'queue_class');
         $sending_schedule = $this->getSendingSchedule();
 
@@ -124,7 +125,7 @@ class QueueFactory
     /**
      * Get the email template that needs to be queued
      *
-     * @return  EmailTemplate
+     * @return EmailTemplate
      */ 
     public function getTemplate()
     {
@@ -134,9 +135,9 @@ class QueueFactory
     /**
      * Set the email template that needs to be queued
      *
-     * @param  EmailTemplate  $template
+     * @param EmailTemplate $template
      *
-     * @return  self
+     * @return self
      */ 
     public function setTemplate(EmailTemplate $template)
     {
@@ -170,7 +171,7 @@ class QueueFactory
     /**
      * Get Current Email Queue Item
      *
-     * @return  EmailQueue
+     * @return EmailQueue
      */ 
     public function getCurrQueueItem()
     {
