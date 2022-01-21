@@ -1,6 +1,10 @@
 ---
 name: emailqueue
 ---
-SiteConfig:
+SilverStripe\Security\Member:
   extensions:
-    - EmailQueueSiteConfigExtension
+    - Taitava\SilverstripeEmailQueue\MemberExtension
+
+SilverStripe\SiteConfig\SiteConfig:
+  extensions:
+    - Taitava\SilverstripeEmailQueue\EmailQueueSiteConfigExtension
