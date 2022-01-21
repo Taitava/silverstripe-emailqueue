@@ -219,8 +219,10 @@ abstract class EmailTemplate extends Email
      * Looks for a ClassName.ss template and renders its content to the body of this email message.
      *
      * This is automatically called during send(), but only if the current body is empty.
+     *
+     * @return EmailTemplate
      */
-    public function renderBody(): self
+    public function renderBody(): EmailTemplate
     {
         $this->setBody($this->forTemplate());
 

@@ -12,7 +12,7 @@ class TestTemplate extends EmailTemplate implements TestOnly
         return;
     }
 
-    public function renderBody(): self
+    public function renderBody(): EmailTemplate
     {
         $this->setBody($this->forTemplate());
         return $this;
